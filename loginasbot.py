@@ -37,6 +37,10 @@ def getServerInvites(server):
   invites = requests.get(f"https://discord.com/api/v{random.choice([8,9,10])}/guilds/{server['id']}/invites", headers={"Authorization": f"Bot {token}"}).json()
   return invites
 
+def getChannelMessages(channelId,limit:str="100"):
+  messages = requests.get(f"https://discord.com/api/v{random.choice([8,9,10])}/channels/{channelId}/messages", headers={"Authorization": f"Bot {token}", "limit": str(limit)}).json()
+  return messages
+
 print("Starting...")
 i = input("What is your bot token? Please paste it in: ")
 try:
@@ -123,12 +127,26 @@ elif get_option_answer(txtopts, inp) == options[0]:
         if "category" in command:
           print("You cannot view a category.")
         elif "text" in command:
-          print("You cannot view a text channel.")
+          print("Scraping last 5 messages.")
+          option = int(command.split('text ')[1])
+          realOption = get_option_answer(channeltxtoptions, option)
+          print(getChannelMessages(limit=5, channelId=realOption.split('(')[1].split(')')[0]))
         elif "voice" in command:
           print("You cannot view a voice channel.")
         elif "news" in command:
-          print("You cannot view a news channel.")
+          print("Scraping last 5 messages.")
+          option = int(command.split('news ')[1])
+          realOption = get_option_answer(announcchanneltxtoptions, option)
+          print(getChannelMessages(limit=5, channelId=realOption.split('(')[1].split(')')[0]))
         else:
           print("Error.")
+      elif i.startswith('help'):
+        try:
+          command = i.split(' ',1)[1]
+        except: command = i
+        if "view" in command:
+          print("view [text|category|voice|news] <index:number>")
+        else:
+          print("Commands:\n  view [text|category|voice|news] <index:number>")
 else:
   print("Unknown option.")
